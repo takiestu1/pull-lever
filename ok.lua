@@ -2518,31 +2518,45 @@ spawn(function()
         end
     end
 end)
-repeat wait() until whitelistsuccess
+repeat wait() until game:GetService("Players").LocalPlayer:FindFirstChild("DataLoaded")
+
+-- Chờ khi màn hình chọn đội (ChooseTeam) xuất hiện và lựa chọn đội phù hợp
+repeat wait() until game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam") and game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Visible
+
+-- Chọn đội (Pirates hoặc Marines) dựa trên giá trị của getgenv().Marines
 repeat wait()
-until game:GetService("Players").LocalPlayer:FindFirstChild("DataLoaded")
-repeat wait()
-    pcall(function()
+pcall(function()
+    local player = game:GetService("Players").LocalPlayer
+    local chooseTeamGui = player.PlayerGui.Main.ChooseTeam
+    if chooseTeamGui then
         if getgenv().Marines then
-            for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Marines.Frame.ViewportFrame.TextButton.Activated)) do
+            -- Chọn Marines nếu getgenv().Marines là true
+            for _, v in pairs(getconnections(chooseTeamGui.Container.Marines.Frame.ViewportFrame.TextButton.Activated)) do
                 v.Function()
             end
         else
-            for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame.TextButton.Activated)) do
+            -- Chọn Pirates nếu getgenv().Marines là false hoặc không có giá trị
+            for _, v in pairs(getconnections(chooseTeamGui.Container.Pirates.Frame.ViewportFrame.TextButton.Activated)) do
                 v.Function()
             end
         end
-    end)
-until game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam") and   not  game:GetService("Players").LocalPlayer.PlayerGui.Main:WaitForChild("ChooseTeam").Visible or not game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam")
-repeat wait()
-until game:GetService("Players").LocalPlayer:FindFirstChild("WeaponAssetCache")
+    end
+end)
 
+-- Chờ khi màn hình ChooseTeam không còn hiển thị
+repeat wait() until not game:GetService("Players").LocalPlayer.PlayerGui.Main:WaitForChild("ChooseTeam").Visible or not game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam")
+
+-- Chờ khi đã tải vũ khí (WeaponAssetCache)
+repeat wait() until game:GetService("Players").LocalPlayer:FindFirstChild("WeaponAssetCache")
+
+-- Đảm bảo người chơi không bị idle
 local vu = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:connect(function()
-vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-wait(1)
-vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 end)
+
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 local Window = OrionLib:MakeWindow({Name = "Night Hub", HidePremium = false, IntroText = "NightHub Library", SaveConfig = true, ConfigFolder = "Night Hub"})
 
