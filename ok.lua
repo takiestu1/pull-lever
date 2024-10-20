@@ -2553,17 +2553,6 @@ local R = Window:MakeTab({
 
 
 -----Label--------------------
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer:FindFirstChild("DataLoaded") and game.Players.LocalPlayer.Team ~= nil
-game:service("VirtualInputManager"):SendKeyEvent(false, "Tab", false, game)
-wait(0)
-game:service("VirtualInputManager"):SendKeyEvent(false, "Tab", false, game)
-pcall(function()
-    local existingGui = game.Players.LocalPlayer.PlayerGui:FindFirstChild("Honglamx")
-    if existingGui then
-        existingGui:Destroy()
-    end
-end)
-
 local Section = R:AddSection({
     Name = "Misc Sever"
 })
@@ -2591,72 +2580,6 @@ local Section = R:AddSection({
                 setclipboard(tostring(game.JobId))
               end    
             })
-
-        R:AddButton({
-            Name = "Hop Sever",
-            Callback = function()
-                _G.AutoRejoin = false
-                Hop()
-              end    
-        })
-
-        R:AddButton({
-            Name = "Rejoin Sever",
-            Callback = function()
-                game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
-              end    
-        })
-
-        R:AddButton({
-            Name = "Hop Sever Low Players",
-            Callback = function()
-                _G.AutoRejoin = false
-                getgenv().AutoTeleport = true
-                getgenv().DontTeleportTheSameNumber = true 
-                getgenv().CopytoClipboard = false
-                if not game:IsLoaded() then
-                    print("Game is loading waiting...")
-                end
-                local maxplayers = math.huge
-                local serversmaxplayer;
-                local goodserver;
-                local gamelink = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100" 
-                function serversearch()
-                    for _, v in pairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync(gamelink)).data) do
-                        if type(v) == "table" and v.playing ~= nil and maxplayers > v.playing then
-                            serversmaxplayer = v.maxPlayers
-                            maxplayers = v.playing
-                            goodserver = v.id
-                        end
-                    end       
-                end
-                function getservers()
-                    serversearch()
-                    for i,v in pairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync(gamelink))) do
-                        if i == "nextPageCursor" then
-                            if gamelink:find("&cursor=") then
-                                local a = gamelink:find("&cursor=")
-                                local b = gamelink:sub(a)
-                                gamelink = gamelink:gsub(b, "")
-                            end
-                            gamelink = gamelink .. "&cursor=" ..v
-                            getservers()
-                        end
-                    end
-                end 
-                getservers()
-                if AutoTeleport then
-                    if DontTeleportTheSameNumber then 
-                        if #game:GetService("Players"):GetPlayers() - 4  == maxplayers then
-                            return warn("It has same number of players (except you)")
-                        elseif goodserver == game.JobId then
-                            return warn("Your current server is the most empty server atm") 
-                        end
-                    end
-                    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, goodserver)
-                end
-              end    
-        })
 
 local Section = R:AddSection({
 	Name = "Race v2"
@@ -2728,34 +2651,6 @@ spawn(function()
     end
 end)
 
-MoveCamTooMoonToggle = R:AddToggle({
-    Name = "Move Cam to Moon",
-    Default = false,
-    Flag = "Move Cam to Moon",
-    Save = true,
-    Callback = function(Value)
-        _G.AutoDooHee = Value
-    end    
-})
-spawn(function()
-    while wait() do
-        pcall(function()
-            if _G.AutoDooHee then
-                local moonDir = game.Lighting:GetMoonDirection()
-                local lookAtPos = game.Workspace.CurrentCamera.CFrame.p + moonDir * 100
-                game.Workspace.CurrentCamera.CFrame = CFrame.lookAt(game.Workspace.CurrentCamera.CFrame.p, lookAtPos)
-            end
-        end)
-    end
-end)
-
-R:AddButton({
-    Name = "Teleport to Gear",
-    Callback = function()
-        _G.TweenMGear = Value
-        StopTween(_G.TweenMGear)	
-      end    
-})
 
 local Section = R:AddSection({
 	Name = "Race v4"
