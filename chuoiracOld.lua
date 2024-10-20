@@ -10,10 +10,6 @@ local lineFrame = Instance.new("Frame")
 local gradientLineFrame = Instance.new("UIGradient")
 local actionFrame = Instance.new("Frame")
 local UIListLayout = Instance.new("UIListLayout")
-local cornerCheckKey = Instance.new("UICorner")
-local buttonCheckKey = Instance.new("TextButton")
-local cornerGetKey = Instance.new("UICorner")
-local buttonGetKey = Instance.new("TextButton")
 
 
 BananaMain.Name = "[Banana] Main"
