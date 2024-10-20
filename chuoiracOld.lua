@@ -8,6 +8,7 @@ local titleFrame = Instance.new("Frame")
 local titleText = Instance.new("TextLabel")
 local lineFrame = Instance.new("Frame")
 local gradientLineFrame = Instance.new("UIGradient")
+local keyBox = Instance.new("TextBox")
 local actionFrame = Instance.new("Frame")
 local UIListLayout = Instance.new("UIListLayout")
 local cornerCheckKey = Instance.new("UICorner")
@@ -37,18 +38,6 @@ titleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 titleFrame.BackgroundTransparency = 1.000
 titleFrame.BorderColor3 = Color3.fromRGB(27, 42, 53)
 titleFrame.Size = UDim2.new(1, 0, 0, 27)
-
-titleText.Name = "titleText"
-titleText.Parent = titleFrame
-titleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-titleText.BackgroundTransparency = 1.000
-titleText.Position = UDim2.new(0, 5, 0, 0)
-titleText.Size = UDim2.new(0, 0, 0, 25)
-titleText.Font = Enum.Font.GothamBold
-titleText.Text = "Banana Hub                "
-titleText.TextColor3 = Color3.fromRGB(255, 218, 85)
-titleText.TextSize = 14.000
-titleText.TextXAlignment = Enum.TextXAlignment.Left
 
 lineFrame.Name = "lineFrame"
 lineFrame.Parent = titleFrame
@@ -80,7 +69,6 @@ strokeGetKey.Color = Color3.fromRGB(255,255,255)
 strokeGetKey.LineJoinMode = Enum.LineJoinMode.Round
 strokeGetKey.Thickness = 1
 
-local URL = 'https://banana-hub.xyz'
 local REQ = (syn and syn.request) or (identifyexecutor() == 'Fluxus' and request) or http_request or http.request or requests
 local HttpService = game:GetService("HttpService")
 
@@ -449,113 +437,6 @@ local requests = function(urls)
     return data
 end
 
-local function getkey()
-    return (keyBox.Text ~= '' and keyBox.Text)
-end
-
-local function savekey()
-    local s, e = pcall(function()
-        if not isfile('auth.bin') then
-            writefile('auth.bin', getkey())
-        end
-    end)
-end
-
-local function removekey()
-    local s, e = pcall(function()
-        if isfile('auth.bin') then
-            delfile('auth.bin')
-        end
-    end)
-end
-
-local function readkey()
-    local KEY;
-    local s, e = pcall(function()
-        if isfile('auth.bin') then
-            KEY = readfile('auth.bin')
-        end
-    end)
-    return KEY
-end
-local  whitelistsuccess = false
-local function checkingwl(KEY)
-    print(KEY)
-    print('[Whitelist#1]: checking...')
-    local publicKEY1 = 3547
-    local publicKEY2 = 73387
-    local FakeOT = os.time()
-    local ServerTime = math.floor(tonumber(game:HttpGet(URL..'/stime')) / 1000)
-    print('[Whitelist#1]: create key diffie-hellman')
-    local PrivateKeyClient = genPrimes()
-    print('[Whitelist#1]: hash key diffie-hellman')
-    local PublicKeyClient = mod(publicKEY1, PrivateKeyClient, publicKEY2)
-
-    local Success, Hwid = pcall(requests, URL..'/header')
-    local HwidDecode = HttpService:JSONDecode(Hwid.Body)
-    local HwidUser = HwidDecode['syn-fingerprint'] or HwidDecode['flux-fingerprint'] or HwidDecode['krnl-fingerprint'] or HwidDecode['sw-fingerprint']
-
-    local Rand = RandomString()
-
-    local Sign = md5sumhexa(HwidUser..PublicKeyClient..tostring(ServerTime):sub(1, -4)..Rand)
-
-    local Success, Respone = pcall(requests, URL.."/auth?key="..KEY.."&nonce="..Rand.."&sign="..Sign.."&id="..PublicKeyClient)
-
-    if Respone.Body:find('key ur expired') then
-        removekey()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Banana Hub Notification";
-            Text = "Invalid Key or Key Expired\n goto https://banana-hub.xyz/getkey get new key";
-            Duration = 5;
-        })
-        titleText.Text = "Banana Hub        invalid Key or Key Expired"
-        return
-    end
-
-    if Respone.Body == 'Invalid Key' then
-        removekey()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Banana Hub Notification";
-            Text = "Invalid Key or Key Expired\n goto https://banana-hub.xyz/getkey get new key";
-            Duration = 5;
-        })
-        titleText.Text = "Banana Hub         Invalid Key or Key Expired"
-        return
-    end
-        
-    if Respone.Body == HwidUser then
-        removekey()
-        titleText.Text = "Banana Hub         Invalid Hwid!"
-        return
-    end
-        
-    if Respone.Body == 'retry again!' then
-        removekey()
-        titleText.Text = "Banana Hub         Invalid Signature!"
-        return
-    end
-
-    local Data
-    local s, e = pcall(function()
-        Data = split(Respone.Body, '-')
-    end)
-    print('[Whitelist#1]: check key diffie-hellman')
-    local SecureKeyPrivate = mod(Data[2], PrivateKeyClient, publicKEY2)
-
-    if Respone.Body ~= md5sumhexa(SecureKeyPrivate..PublicKeyClient..KEY..tostring(ServerTime):sub(1, -4)..HwidUser)..'-'..Data[2] then
-        removekey()
-        titleText.Text = "Banana Hub                Invalid Signature!"
-        return
-    end
-    print('[Whitelist#1]: check response')
-    if Data[1] == md5sumhexa(SecureKeyPrivate..PublicKeyClient..KEY..tostring(ServerTime):sub(1, -4)..HwidUser) then
-        savekey()
-        titleText.Text = "Banana Hub                whitelist success"
-        mainFrame:Destroy()
-        print('whitelist success')
-        whitelistsuccess = true
-    end
-end
 
 if getgenv().Key then
     checkingwl(getgenv().Key)
@@ -573,31 +454,6 @@ buttonCheckKey.MouseButton1Click:Connect(function()
     end 
 end)
 
-buttonGetKey.MouseButton1Click:Connect(function()
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Banana Hub Notification";
-        Text = "Open folder Exploit goto /workspace/ open getkey.txt \n copy link get key";
-        Duration = 5;
-    })
-    titleText.Text = "Goto https://banana-hub.xyz/getkey"
-    setclipboard("https://banana-hub.xyz/getkey")
-    writefile('getkey.txt', 'https://banana-hub.xyz/getkey')
-end)
-repeat wait() until whitelistsuccess
-repeat wait()
-until game:GetService("Players").LocalPlayer:FindFirstChild("DataLoaded")
-repeat wait()
-    pcall(function()
-        if getgenv().Marines then
-            for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Marines.Frame.ViewportFrame.TextButton.Activated)) do
-                v.Function()
-            end
-        else
-            for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.PlayerGui.Main.ChooseTeam.Container.Pirates.Frame.ViewportFrame.TextButton.Activated)) do
-                v.Function()
-            end
-        end
-    end)
 until game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam") and   not  game:GetService("Players").LocalPlayer.PlayerGui.Main:WaitForChild("ChooseTeam").Visible or not game:GetService("Players").LocalPlayer.PlayerGui.Main:FindFirstChild("ChooseTeam")
 repeat wait()
 until game:GetService("Players").LocalPlayer:FindFirstChild("WeaponAssetCache")
