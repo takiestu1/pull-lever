@@ -10,60 +10,6 @@ local lineFrame = Instance.new("Frame")
 local gradientLineFrame = Instance.new("UIGradient")
 local actionFrame = Instance.new("Frame")
 local UIListLayout = Instance.new("UIListLayout")
-
-
-BananaMain.Name = "[Banana] Main"
-BananaMain.Parent = game:GetService('CoreGui')
-
-mainFrame.Name = "mainFrame"
-mainFrame.Parent = BananaMain
-mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-mainFrame.BorderSizePixel = 0
-mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-mainFrame.Size = UDim2.new(0, 350, 0, 120)
-
-cornerMainFrame.CornerRadius = UDim.new(0, 4)
-cornerMainFrame.Name = "cornerMainFrame"
-cornerMainFrame.Parent = mainFrame
-
-titleFrame.Name = "titleFrame"
-titleFrame.Parent = mainFrame
-titleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-titleFrame.BackgroundTransparency = 1.000
-titleFrame.BorderColor3 = Color3.fromRGB(27, 42, 53)
-titleFrame.Size = UDim2.new(1, 0, 0, 27)
-
-lineFrame.Name = "lineFrame"
-lineFrame.Parent = titleFrame
-lineFrame.BackgroundColor3 = Color3.fromRGB(255, 218, 85)
-lineFrame.BorderSizePixel = 0
-lineFrame.Position = UDim2.new(0, 5, 0, 25)
-lineFrame.Size = UDim2.new(0, 80, 0, 2)
-
-gradientLineFrame.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 0.44), NumberSequenceKeypoint.new(0.90, 0.70), NumberSequenceKeypoint.new(1.00, 1.00)}
-gradientLineFrame.Name = "gradientLineFrame"
-gradientLineFrame.Parent = lineFrame
-
-actionFrame.Name = "actionFrame"
-actionFrame.Parent = mainFrame
-actionFrame.AnchorPoint = Vector2.new(0.5, 1)
-actionFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-actionFrame.BackgroundTransparency = 1.000
-actionFrame.Position = UDim2.new(0.5, 0, 1, -10)
-actionFrame.Size = UDim2.new(1, -10, 0, 25)
-
-UIListLayout.Parent = actionFrame
-UIListLayout.FillDirection = Enum.FillDirection.Horizontal
-UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0, 30)
-
-strokeGetKey.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-strokeGetKey.Color = Color3.fromRGB(255,255,255)
-strokeGetKey.LineJoinMode = Enum.LineJoinMode.Round
-strokeGetKey.Thickness = 1
-
 local HttpService = game:GetService("HttpService")
 
 
